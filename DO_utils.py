@@ -109,7 +109,29 @@ def parse_DO_obo(obo_file):
 			started = True
 	return obo
 
-def parent_child_relationships(obo):
+
+def relationship_by_doid(obo):
+	# a key to a value is a "is_a" relationship propagating up the hierarchy
+	# example: key = bacterial pneumonia, value = pnemonia
+	# Many keys can map to the same value, and a value itself may serve as
+	# a key to another value.
+	# Any key may have multiple parents, o.is_a is a list
+	parents_of = {}
+	for o in obo:
+		parents_of[o.DOID] = o.is_a
+
+	# Any key may have multiple children (unless it's a leaf term)
+	children_of = {}
+	for k, vs in parents_of.iteritems():
+		for v in vs:
+			if v in children_of:
+				children_of[v].append(k)
+			else:
+				children_of[v] = [k]
+
+	return parents_of, children_of
+
+def relationship_by_name(obo):
 	# a key to a value is a "is_a" relationship propagating up the hierarchy
 	# example: key = bacterial pneumonia, value = pnemonia
 	# Many keys can map to the same value, and a value itself may serve as
@@ -143,6 +165,24 @@ def write_DOID_DB(obo, outfileName):
 		outfile.write("\"{}\"\t\"DOID{}\"\n".format(o.name, o.DOID))
 		for s in o.synonyms:
 			outfile.write("\"{}\"\t\"DOID{}\"\n".format(s, o.DOID))
+
+def get_level(obo,node,children_of,current_level,levels):
+	## Is this the root?
+	if current_level == 0:
+		levels[node] = current_level
+		for child in children_of[node]:
+			get_level(obo,child,children_of,current_level+1,levels)
+	## Is this an inner node?
+	elif node in children_of:
+		levels[node] = current_level
+		for child in children_of[node]:
+			get_level(obo,child,children_of,current_level+1,levels)
+	## This must be a leaf
+	else:
+		levels[node] = current_level
+
+
+
 
 def main():
 	parser = argparse.ArgumentParser()
