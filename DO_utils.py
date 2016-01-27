@@ -181,6 +181,14 @@ def get_level(obo,node,children_of,current_level,levels):
 	else:
 		levels[node] = current_level
 
+def is_a_parent(base_node,query_node,max_level,current_node,current_level,parents_of):
+	if current_node == query_node:
+		return True
+	elif current_level <= max_level or current_level == 0:
+		return False
+	else:
+		for parent in parents_of[current_node]:
+			return is_a_parent(base_node,query_node,max_level,parent,current_level-1,parents_of)
 
 
 
