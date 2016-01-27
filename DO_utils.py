@@ -1,7 +1,5 @@
 import sys
 import argparse
-sys.path.append("/Users/Inbar/Desktop/Helpful Methods")
-import utilities
 
 class OBONode():
 	def __init__(self):
@@ -156,9 +154,6 @@ def main():
 	obo = parse_DO_obo(args.d)
 
 	#write_DOID_DB(obo, args.o)
-
-if __name__ == "__main__":
-	main()
 
 
 
