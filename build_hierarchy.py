@@ -13,7 +13,7 @@ do.get_level(obo,'disease',children_of,0,levels)
 
 db = pd.read_table(db_file)
 
-data_path = "data/"
+data_path = "/Users/ab455/Downloads/DOID_full_datasets/"
 files = os.listdir(data_path)
 data = pd.read_table(data_path+files[0])
 for f in files[1:len(files)]:
@@ -21,16 +21,25 @@ for f in files[1:len(files)]:
 
 terms = Series(data['TERM'].values.ravel()).unique()
 
-hier = {}
+# Get a small section of the DO to experiment with #
+base_term_id = 'DOID1287'
+base_term = 'cardiovascular system disease'
+base_level = level[base_term]
+
+## Get all of the child terms ##
+child_terms = []
 ## Find top ##
 for term in terms:
-    term_level = levels[term]
-    for parent in terms:
-        parent_level = levels[parent]
+    if term in levels:
+        term_level = levels[term]
         if term != parent:
-            isap = do.is_a_parent(term,parent,parent_level,term,term_level,parents_of)
-            if isap:
-                if term in hier:
-                    hier[term].append([parent,parent_level])
-                else:
-                    hier[term] = [parent,parent_level]
+            isap = do.is_a_parent(term,base_term,0,term,term_level,parents_of)
+            if isap and not(term in child_terms):
+                child_terms.append(term)
+
+
+## Get all of the pages with one of these terms ##
+term_data = data[data['TERM'].isin(child_terms)]
+
+## Now we're going to make an article x term matrix to keep to store everything ##
+out_data = pd.DataFrame(columns = child_terms)
