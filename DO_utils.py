@@ -190,7 +190,15 @@ def is_a_parent(base_node,query_node,max_level,current_node,current_level,parent
 		for parent in parents_of[current_node]:
 			return is_a_parent(base_node,query_node,max_level,parent,current_level-1,parents_of)
 
-
+def path_to_from(to_node,from_node,parents_of,path,root="disease"):
+	if from_node == root:
+		return None
+	elif from_node == to_node:
+		return path
+	else:
+		for parent in parents_of[from_node]:
+			path.append(parent)
+			return path_to_from(to_node,parent,parents_of,path)
 
 def main():
 	parser = argparse.ArgumentParser()
