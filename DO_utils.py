@@ -181,14 +181,17 @@ def get_level(obo,node,children_of,current_level,levels):
 	else:
 		levels[node] = current_level
 
-def is_a_parent(base_node,query_node,max_level,current_node,current_level,parents_of):
+def is_a_parent(base_node,query_node,current_node,parents_of,node_queue):
 	if current_node == query_node:
 		return True
-	elif current_level <= max_level or current_level == 0:
+	if current_node == 'disease' and len(node_queue) == 0:
 		return False
 	else:
-		for parent in parents_of[current_node]:
-			return is_a_parent(base_node,query_node,max_level,parent,current_level-1,parents_of)
+		for node in node_queue:
+			node_queue = node_queue + parents_of[node]
+			node_queue.remove(node)
+			return is_a_parent(base_node=base_node,query_node=query_node,current_node=node,parents_of=parents_of,node_queue=node_queue)
+
 
 def path_to_from(to_node,from_node,parents_of,path,root="disease"):
 	if from_node == root:
@@ -210,13 +213,3 @@ def main():
 	obo = parse_DO_obo(args.d)
 
 	#write_DOID_DB(obo, args.o)
-
-
-
-
-
-
-
-
-
-
