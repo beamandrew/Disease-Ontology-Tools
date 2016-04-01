@@ -29,12 +29,11 @@ terms = Series(data['TERM'].values.ravel()).unique()
 
 # Get a small section of the DO to experiment with #
 base_term_id = 'DOID0050700'
-base_term = 'cardiomyopathy'
+base_term = 'heart disease'
 base_level = levels[base_term]
 
 ## Get all of the child terms ##
 child_terms = []
-## Find top ##
 for term in terms:
     if term in levels:
         term_level = levels[term]
@@ -44,3 +43,10 @@ for term in terms:
                 child_terms.append(term)
 
 visualize_terms(base_term,child_terms,children_of)
+
+## Get terms count ##
+term_count = {}
+for term in child_terms:
+    count = data[data.TERM == term].shape[0]
+    term_count[term] = count
+## Now find all of the valid terms ##
